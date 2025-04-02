@@ -8,7 +8,7 @@ function Item({ label, path, icon }) {
         <li
             className="p-2.5 cursor-pointer rounded-[8px] my-1 focus:bg-[#b2c2f6]"
             tabIndex="0">
-            <i className={icon}></i>
+            <i className={icon} aria-hidden="true"></i>
             <Link
                 href={`/${path}`}
                 className="ml-2.5 font-medium">{ label }</Link>
@@ -17,15 +17,8 @@ function Item({ label, path, icon }) {
 }
 
 export default function Sidebar() {
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-    if (!mounted) {
-        return null
-    };
     return (
-        <nav className="absolute flex flex-col items-center h-full w-full sm:w-[300px] lg:w-[400px] bg-[#c9d6ff]">
+        <nav className="flex flex-col items-center h-full w-full sm:w-[300px] lg:w-[400px] bg-[#c9d6ff]">
             <div className="w-full h-full flex flex-col">
                 <div className="w-full p-4">
                     <input
