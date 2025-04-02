@@ -1,4 +1,3 @@
-
 import typeorm, { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({name: "User"})
