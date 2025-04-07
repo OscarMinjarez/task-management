@@ -1,5 +1,5 @@
-import Sidebar from "../components/Sidebar";
-import TaskItem from "../components/TaskItem";
+import Sidebar from "../../components/Sidebar";
+import TaskItem from "../../components/TaskItem";
 import "./dashboard.css";
 
 export default function Dashboard() {
