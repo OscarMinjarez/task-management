@@ -1,4 +1,23 @@
 .dashboard-container {
-    width: 100vw;
     height: 100vh;
-}
+  }
+  
+  /* Para el scroll */
+  .flex-1.overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: #c7d2fe #eef2ff;
+  }
+  
+  /* Estilos para motores WebKit */
+  .flex-1.overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .flex-1.overflow-y-auto::-webkit-scrollbar-track {
+    background: #eef2ff;
+  }
+  
+  .flex-1.overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: #c7d2fe;
+    border-radius: 4px;
+  }
