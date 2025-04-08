@@ -1,23 +1,48 @@
 .dashboard-container {
-    height: 100vh;
+  height: 100vh;
+}
+
+/* Scroll personalizado */
+.overflow-y-auto {
+  scrollbar-width: thin; 
+  scrollbar-color: #c7d2fe #eef2ff; 
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;  /* Ancho del scrollbar vertical */
+  height: 6px; /* Altura del scrollbar horizontal */
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #eef2ff;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: #c7d2fe;
+  border-radius: 3px;
+  min-height: 20px; /* Altura mínima del thumb */
+}
+
+/* Animación de notificación */
+.achievement-notification.fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(20px); }
+}
+
+@keyframes pop-fade {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
   }
-  
-  /* Para el scroll */
-  .flex-1.overflow-y-auto {
-    scrollbar-width: thin;
-    scrollbar-color: #c7d2fe #eef2ff;
+  80% {
+    transform: scale(1.2);
+    opacity: 1;
   }
-  
-  /* Estilos para motores WebKit */
-  .flex-1.overflow-y-auto::-webkit-scrollbar {
-    width: 8px;
+  100% {
+    transform: scale(1);
   }
-  
-  .flex-1.overflow-y-auto::-webkit-scrollbar-track {
-    background: #eef2ff;
-  }
-  
-  .flex-1.overflow-y-auto::-webkit-scrollbar-thumb {
-    background-color: #c7d2fe;
-    border-radius: 4px;
-  }
+}
