@@ -9,12 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "canvas-confetti": "^1.9.3",
     "next": "15.2.3",
+    "react": "^19.1.0",
+    "react-confetti-explosion": "^2.1.2",
+    "react-dom": "^19.1.0",
+    "react-select": "^5.10.1",
+    "use-sound": "^5.0.0"
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "typeorm": "^0.3.21"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-react": "^7.26.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^22.13.17",
     "@types/react": "^19.0.12",
