@@ -27,7 +27,7 @@ export default function Dashboard({
 
     const toggleTaskCompletion = (taskId) => {
         setTasks(tasks.map(task => {
-            if (task.id === taskId) {
+            if (task.uuid === taskId) {
                 const wasCompleted = task.completed;
                 const newCompleted = !wasCompleted;
 
@@ -127,18 +127,18 @@ export default function Dashboard({
                                 </div>
 
                                 {/* TaskItems */}
-                                <div className="px-6 pb-6">
-                                    <div className="space-y-3">
+                                <div>
+                                    <div className="space-y-3 px-3">
                                         {tasks.map((task) => (
                                             <TaskItem
                                                 key={task.uuid}
                                                 task={task}
-                                                onToggleComplete={() => toggleTaskCompletion(task.id)}
+                                                onToggleComplete={() => toggleTaskCompletion(task.uuid)}
                                             />
                                         ))}
                                     </div>
                                     {/* Botón para agregar tarea */}
-                                    <div className="sticky bottom-4 rounded-lg shadow-xl z-10 bg-[#eef2ff]">
+                                    <div className="sticky bottom-[0.1px]  z-10 bg-[#eef2ff] py-[2px] px-3">
                                         <CreateTask onClick={() => setIsSidebarOpen(true)} />
                                     </div>
 

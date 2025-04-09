@@ -8,13 +8,7 @@ import StateSelect from './StateSelect';
 
 function formatDate(dateString) {
     const date = new Date(dateString);
-    const options = {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-    };
-    return date.toLocaleDateString('es-ES', options);
+    return date.toLocaleDateString('es-ES');
 }
 
 // Componente ListOptions original (sin cambios)
@@ -40,7 +34,7 @@ export default function TaskItem({ task, onToggleComplete }) {
 
     const handleClick = () => {
         const wasCompleted = task.completed;
-        onToggleComplete();
+        onToggleComplete(task.uuid);
 
         if (!wasCompleted) {
             setIsAnimating(true);
@@ -96,6 +90,8 @@ export default function TaskItem({ task, onToggleComplete }) {
                 <div className="flex items-center gap-1 text-sm text-gray-500">
                     <i className="fa-regular fa-calendar" aria-hidden="true"></i>
                     <span>{formatDate(task.dateLimit)}</span>
+                    <i className="fa-solid fa-note-sticky" aria-hidden="true"></i>
+                    <span>{task.description}</span>
                 </div>
             </div>
 

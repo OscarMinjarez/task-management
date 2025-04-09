@@ -13,7 +13,11 @@ export async function init() {
 
 export async function findAll(): Promise<Task[]> {
     await init();
-    return await taskRepository.find();
+    return await taskRepository.find({
+        order: {
+            dateCreation: "ASC"
+        }
+    });
 }
 
 export async function create(tasks: CreateTaskDto): Promise<Task> {
