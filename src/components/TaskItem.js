@@ -6,6 +6,17 @@ import { useState } from 'react';
 import confetti from 'canvas-confetti';
 import StateSelect from './StateSelect';
 
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    };
+    return date.toLocaleDateString('es-ES', options);
+}
+
 // Componente ListOptions original (sin cambios)
 function ListOptions({ options, value, onChange }) {
     return (
@@ -84,7 +95,7 @@ export default function TaskItem({ task, onToggleComplete }) {
                 </h3>
                 <div className="flex items-center gap-1 text-sm text-gray-500">
                     <i className="fa-regular fa-calendar" aria-hidden="true"></i>
-                    <span>{task.date}</span>
+                    <span>{formatDate(task.dateLimit)}</span>
                 </div>
             </div>
 

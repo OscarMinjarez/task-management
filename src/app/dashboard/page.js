@@ -4,7 +4,7 @@ import TaskItem from "../../components/TaskItem";
 import Header from "../../components/Header";
 import Calendar from "../../components/Calendar";
 import "./dashboard.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AchievementNotification from "../../components/AchievementNotification";
 import BarProgress from "../../components/BarProgress";
 import CreateTask from '../../components/CreateTask';
@@ -15,14 +15,7 @@ export default function Dashboard({
 }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [points, setPoints] = useState(0);
-    const [tasks, setTasks] = useState(
-        Array(30).fill().map((_, i) => ({
-            id: i + 1,
-            title: `Tarea ${i + 1}`,
-            completed: false,
-            date: 'Hoy'
-        }))
-    );
+    const [tasks, setTasks] = useState([]);
     const [unlockedAchievement, setUnlockedAchievement] = useState(null);
 
     const rewards = [
@@ -78,6 +71,14 @@ export default function Dashboard({
         }
     };
 
+    useEffect(() => {
+        async function fetchTasks() {
+            const tasksFromBackend = await getTasksFromBackend();
+            setTasks(tasksFromBackend || []);
+        }
+        fetchTasks();
+    }, []);
+
     return (
         <>
             <div className="dashboard-container bg-[#eef2ff] flex h-screen min-h-full overflow-hidden">
@@ -130,7 +131,7 @@ export default function Dashboard({
                                     <div className="space-y-3">
                                         {tasks.map((task) => (
                                             <TaskItem
-                                                key={task.id}
+                                                key={task.uuid}
                                                 task={task}
                                                 onToggleComplete={() => toggleTaskCompletion(task.id)}
                                             />
@@ -174,4 +175,19 @@ export default function Dashboard({
             </div>
         </>
     );
+}
+
+async function getTasksFromBackend() {
+    try {
+        const response = await fetch("http://localhost:3000/api/tasks", {
+            method: "GET",
+            headers: {
+                "Accept": "application.json"
+            }
+        });
+        const data = await response.json();
+        return data.tasks;
+    } catch (e) {
+        console.error(e);
+    }
 }
