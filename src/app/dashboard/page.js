@@ -3,14 +3,14 @@ import Sidebar from "../../components/Sidebar";
 import TaskItem from "../../components/TaskItem";
 import Header from "../../components/Header";
 import Calendar from "../../components/Calendar";
-import Image from 'next/image';
-import UserLogo from 'public/user.png';
 import "./dashboard.css";
 import { useState } from "react";
 import AchievementNotification from "../../components/AchievementNotification";
 import BarProgress from "../../components/BarProgress";
 
-export default function Dashboard() {
+export default function Dashboard({
+    username = "Usuario",
+}) {
     const [points, setPoints] = useState(0);
     const [tasks, setTasks] = useState(
         Array(30).fill().map((_, i) => ({
@@ -47,6 +47,13 @@ export default function Dashboard() {
         }));
     };
 
+    // Obtener la fecha actual formateada
+    const getCurrentDate = () => {
+        const options = { weekday: 'long', day: 'numeric', month: 'long' };
+        return new Date().toLocaleDateString('es-ES', options);
+    };
+
+
     const checkAchievements = (currentPoints) => {
         const newAchievement = rewards.find(reward =>
             currentPoints >= reward.points &&
@@ -62,71 +69,76 @@ export default function Dashboard() {
     return (
         <>
             <div className="dashboard-container bg-[#eef2ff] flex h-screen min-h-full overflow-hidden">
-
                 <Sidebar />
 
                 {/* Contenedor principal */}
-                <div className="flex flex-col lg:flex-row w-full sm:overflow-y-auto lg:overflow-hidden">
-                    {/* Área izquierda */}
-                    <div className="w-full lg:w-[750px] flex flex-col">
-                        <div className="p-6 pb-0">
-                            <Header />
-                        </div>
-
-                        {/* Contenedor de tareas */}
-                        <div className="flex-1 p-6 pt-2 overflow-y-auto">
-                            {/* Encabezados*/}
-                            <div className="grid grid-cols-12 gap-4 -mt-4 mb-2 px-2">
-                                <div className="col-span-6">
-                                    <h2 className="text-xl font-semibold text-[#625f5f]">Tareas</h2>
-                                </div>
-                                <div className="col-span-3">
-                                    <h2 className="text-lg font-semibold text-[#625f5f]">Lista</h2>
-                                </div>
-                                <div className="col-span-3">
-                                    <h2 className="text-lg font-semibold text-[#625f5f]">Estado</h2>
-                                </div>
-                            </div>
-
-                            {/* TaskItems */}
-                            <div className="space-y-3">
-                                {tasks.map((task) => (
-                                    <TaskItem
-                                        key={task.id}
-                                        task={task}
-                                        onToggleComplete={() => toggleTaskCompletion(task.id)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                <div className="flex flex-col w-full overflow-hidden">
+                    {/* Header */}
+                    <div className="w-full p-6 pb-0">
+                        <Header
+                            points={points}
+                            pageTitle="Dashboard"
+                            pageIcon="home"
+                        />
                     </div>
 
-                    {/* Área derecha*/}
-                    <div className="w-full lg:flex-1 flex flex-col pt-6 pr-6">
-                        {/* Sección usuario */}
-                        <div className="flex justify-end">
-                            <p className="text-lg font-bold text-[#625f5f] ml-2">Usuario</p>
-                            <div className="flex flex-col ml-2 items-center">
-                                <Image
-                                    src={UserLogo}
-                                    alt="User logo"
-                                    width={30}
-                                    height={30}
-                                />
-                            </div>
-                            <div className="bg-[#e0e7ff] rounded-full px-3 py-1 ml-2">
-                                <span className="text-[#4f46e5] font-bold">{points} pts</span>
+                    {/* Contenido debajo del header*/}
+                    <div className="flex flex-1 overflow-hidden">
+                        {/* Área izquierda */}
+                        <div className="w-full lg:w-[750px] flex flex-col overflow-hidden">
+
+                            <div className="overflow-y-auto h-full">
+                                {/* saludo y fecha */}
+                                <div className="sticky top-0 z-10 bg-[#eef2ff] pt-4 pb-2 px-6">
+                                    <div className='bg-[#c9d6ff] py-3 px-6 rounded-xl'>
+                                        <div className="flex items-center gap-4 mt-1">
+                                            <p className="text-lg text-black font-bold">¡Hola {username}!</p>
+                                        </div>
+                                        <div className='flex items-center gap-4 mt-1'>
+                                            <p className="text-lg text-black">{getCurrentDate()}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Encabezados*/}
+                                    <div className="sticky top-0 z-10 grid grid-cols-12 gap-4 mt-2 px-2 bg-[#eef2ff] py-2">
+                                        <div className="col-span-6">
+                                            <h2 className="text-xl font-bold text-[#625f5f]">Tareas</h2>
+                                        </div>
+                                        <div className="col-span-3">
+                                            <h2 className="text-lg font-bold text-[#625f5f]">Lista</h2>
+                                        </div>
+                                        <div className="col-span-3">
+                                            <h2 className="text-lg font-bold text-[#625f5f]">Estado</h2>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* TaskItems */}
+                                <div className="px-6 pb-6">
+                                    <div className="space-y-3">
+                                        {tasks.map((task) => (
+                                            <TaskItem
+                                                key={task.id}
+                                                task={task}
+                                                onToggleComplete={() => toggleTaskCompletion(task.id)}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Calendario */}
-                        <div className="flex-1 flex items-start justify-center mt-4 lg:mt-6 lg:justify-start lg:pl-4">
-                            <Calendar />
-                        </div>
+                        {/* Área derecha (calendario y progreso) */}
+                        <div className="hidden lg:flex flex-col w-[400px] xl:w-[450px] pl-6 pr-6">
+                            {/* Calendario alineado con el saludo */}
+                            <div className="mt-[20px]"> {/* Ajusta este valor según necesidad */}
+                                <Calendar />
+                            </div>
 
-                        {/* Sistema de Recompensas*/}
-                        <div className="flex-1 flex items-start justify-center mt-4 lg:-mt-3 lg:justify-start lg:pl-4">
-                            <BarProgress points={points} />
+                            {/* Barra de progreso */}
+                            <div className="mt-4">
+                                <BarProgress points={points} />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -137,6 +149,5 @@ export default function Dashboard() {
                 )}
             </div>
         </>
-
     );
 }

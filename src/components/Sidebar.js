@@ -1,8 +1,6 @@
 "use client";
 import Image from 'next/image';
 import logo from 'public/logo-sm.png';
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 
 function Item({ label, path, icon }) {
