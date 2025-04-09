@@ -23,7 +23,7 @@ export default function StateSelect({ value, onChange }) {
                     <span className={`w-2 h-2 rounded-full ${selected.color}`}></span>
                     <span>{selected.label}</span>
                 </div>
-                <i className="fa-solid fa-chevron-down text-gray-500 text-xs ml-1"></i>
+                <i className="fa-solid fa-chevron-down text-gray-500 text-xs ml-1" aria-hidden="true"></i>
             </button>
 
             {/* Menú de opciones */}

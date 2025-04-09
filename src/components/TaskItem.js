@@ -83,7 +83,7 @@ export default function TaskItem({ task, onToggleComplete }) {
                     {task.title}
                 </h3>
                 <div className="flex items-center gap-1 text-sm text-gray-500">
-                    <i className="fa-regular fa-calendar"></i>
+                    <i className="fa-regular fa-calendar" aria-hidden="true"></i>
                     <span>{task.date}</span>
                 </div>
             </div>

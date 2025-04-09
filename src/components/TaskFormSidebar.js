@@ -26,9 +26,9 @@ const CalendarIcon = () => (
 
 export default function TaskFormSidebar({ isOpen, onClose, onCreate, onDelete, task = {}, onToggleComplete }) {
     const [title, setTitle] = useState(task.title || '');
-    const [status, setStatus] = useState(task.status || 'En progreso');
+    const [state, setState] = useState(task.state || 'En progreso');
     const [list, setList] = useState(task.list || 'Personal');
-    const [dueDate, setDueDate] = useState(task.dueDate || '');
+    const [dateLimit, setDateLimit] = useState(task.dueDate || '');
     const [description, setDescription] = useState(task.description || '');
     const [creationDate] = useState(task.creationDate || new Date().toLocaleDateString('es-ES'));
     const [isAnimating, setIsAnimating] = useState(false);
@@ -56,17 +56,17 @@ export default function TaskFormSidebar({ isOpen, onClose, onCreate, onDelete, t
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onCreate({
+        const task = {
             title,
-            status,
+            // status: state,
             list,
-            dueDate,
+            dateLimit,
             description,
-            creationDate,
             completed
-        });
+        };
+        await saveTask(task);
         onClose();
     };
 
@@ -142,8 +142,8 @@ export default function TaskFormSidebar({ isOpen, onClose, onCreate, onDelete, t
                             <div>
                                 <label className="block text-[#625f5f] font-medium mb-2">Estado</label>
                                 <select
-                                    value={status}
-                                    onChange={(e) => setStatus(e.target.value)}
+                                    value={state}
+                                    onChange={(e) => setState(e.target.value)}
                                     className="w-full px-4 py-2 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6467d1]"
                                 >
                                     <option value="En progreso">En progreso</option>
@@ -172,8 +172,8 @@ export default function TaskFormSidebar({ isOpen, onClose, onCreate, onDelete, t
                             <div className="relative">
                                 <input
                                     type="date"
-                                    value={dueDate}
-                                    onChange={(e) => setDueDate(e.target.value)}
+                                    value={dateLimit}
+                                    onChange={(e) => setDateLimit(e.target.value)}
                                     className="w-full px-4 py-2 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6467d1] pl-10"
                                 />
                                 <div className="absolute left-3 top-3 text-gray-400">
@@ -234,6 +234,7 @@ export default function TaskFormSidebar({ isOpen, onClose, onCreate, onDelete, t
                             <button
                                 type="submit"
                                 className="px-6 py-3 bg-[#6467d1] text-white rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
+                                onClick={handleSubmit}
                             >
                                 Guardar
                             </button>
@@ -243,4 +244,15 @@ export default function TaskFormSidebar({ isOpen, onClose, onCreate, onDelete, t
             </div>
         </div>
     );
+}
+
+async function saveTask(task) {
+    try {
+        await fetch("http://localhost:3000/api/tasks", {
+            method: "POST",
+            body: JSON.stringify(task)
+        });
+    } catch(e) {
+        console.error(e);
+    }
 }
