@@ -21,7 +21,7 @@ export default function CreateTask({ onClick }) {
           </div>
     
           <div className="col-span-11 flex items-center">
-            <p className="text-[#625f5f]">Agregar nueva tarea...</p>
+            <p className="text-[#625f5f]">Agregar una tarea</p>
           </div>
         </div>
       );

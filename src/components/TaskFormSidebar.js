@@ -74,7 +74,7 @@ export default function TaskFormSidebar({ isOpen, onClose, onCreate, onDelete, t
 
     return (
         <div className="fixed inset-0 z-50 overflow-hidden">
-            <div className="absolute inset-0 bg-transparent" onClick={onClose}></div>
+            <div className="absolute inset-0 bg-black/15" onClick={onClose}></div>
 
             <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl transition-all duration-300">
                 <div className="flex flex-col h-full p-6 bg-[#c9d6ff]">

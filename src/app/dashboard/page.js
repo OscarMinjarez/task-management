@@ -137,7 +137,7 @@ export default function Dashboard({
                                         ))}
                                     </div>
                                     {/* Botón para agregar tarea */}
-                                    <div className="sticky rounded-lg bottom-0 z-10 bg-[#eef2ff]">
+                                    <div className="sticky bottom-4 rounded-lg shadow-xl z-10 bg-[#eef2ff]">
                                         <CreateTask onClick={() => setIsSidebarOpen(true)} />
                                     </div>
 

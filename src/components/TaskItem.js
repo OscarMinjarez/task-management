@@ -4,7 +4,9 @@ import LogroGris from 'public/logro-gray.png';
 import Image from 'next/image';
 import { useState } from 'react';
 import confetti from 'canvas-confetti';
+import StateSelect from './StateSelect';
 
+// Componente ListOptions original (sin cambios)
 function ListOptions({ options, value, onChange }) {
     return (
         <select
@@ -21,17 +23,18 @@ function ListOptions({ options, value, onChange }) {
 
 export default function TaskItem({ task, onToggleComplete }) {
     const [list, setList] = useState("Personal");
-    const [status, setStatus] = useState("Acompletado");
+    const [status, setStatus] = useState("Pendiente");
     const [isHovered, setIsHovered] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
-    const [showConfetti, setShowConfetti] = useState(false);
 
     const handleClick = () => {
         const wasCompleted = task.completed;
         onToggleComplete();
 
         if (!wasCompleted) {
-            setShowConfetti(true);
+            setIsAnimating(true);
+            setTimeout(() => setIsAnimating(false), 1000);
+
             const audio = new Audio('/sounds/tin-sound.wav');
             audio.volume = 0.5;
             audio.play().catch(e => console.log('Error de audio:', e));
@@ -45,7 +48,7 @@ export default function TaskItem({ task, onToggleComplete }) {
     };
 
     return (
-        <div className="grid grid-cols-12 gap-4 px-3 bg-white rounded-lg shadow-sm h-[60px] relative overflow-hidden">
+        <div className="grid grid-cols-12 gap-4 px-3 bg-white rounded-lg shadow-sm h-[60px] relative">
             {/* Columna para la estrella */}
             <div className="col-span-1 flex items-center justify-start">
                 <button
@@ -61,20 +64,17 @@ export default function TaskItem({ task, onToggleComplete }) {
                             alt="Tarea pendiente"
                             width={30}
                             height={30}
-                            className={`transition-all duration-300 ${task.completed ? 'opacity-0' : 'opacity-100'
-                                } group-hover:opacity-0`}
+                            className={`transition-all duration-300 ${task.completed ? 'opacity-0' : 'opacity-100'} group-hover:opacity-0`}
                         />
                         <Image
                             src={LogroAmarillo}
                             alt="Tarea completada"
                             width={30}
                             height={30}
-                            className={`absolute top-0 left-0 transition-all duration-300 ${task.completed ? 'opacity-100' : 'opacity-0'
-                                } group-hover:opacity-100 ${isAnimating ? 'animate-ping' : ''}`}
+                            className={`absolute top-0 left-0 transition-all duration-300 ${task.completed ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 ${isAnimating ? 'animate-ping' : ''}`}
                         />
                     </div>
                 </button>
-
             </div>
 
             {/* Columna Tarea */}
@@ -98,12 +98,10 @@ export default function TaskItem({ task, onToggleComplete }) {
             </div>
 
             {/* Columna Estado */}
-            <div className="col-span-3 flex items-center">
-                <ListOptions
-                    options={["En progreso", "Completado", "Pendiente"]}
+            <div className="col-span-3 flex items-center gap-2">
+                <StateSelect
                     value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                />
+                    onChange={(val) => setStatus(val)} />
             </div>
         </div>
     );
