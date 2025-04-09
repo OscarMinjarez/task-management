@@ -7,10 +7,13 @@ import "./dashboard.css";
 import { useState } from "react";
 import AchievementNotification from "../../components/AchievementNotification";
 import BarProgress from "../../components/BarProgress";
+import CreateTask from '../../components/CreateTask';
+import TaskFormSidebar from '../../components/TaskFormSidebar';
 
 export default function Dashboard({
     username = "Usuario",
 }) {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [points, setPoints] = useState(0);
     const [tasks, setTasks] = useState(
         Array(30).fill().map((_, i) => ({
@@ -47,9 +50,18 @@ export default function Dashboard({
         }));
     };
 
+    const handleCreateTask = (newTask) => {
+        setTasks([...tasks, {
+            ...newTask,
+            id: Date.now(),
+            completed: false,
+            date: newTask.dueDate || 'Sin fecha'
+        }]);
+    };
+
     // Obtener la fecha actual formateada
     const getCurrentDate = () => {
-        const options = { weekday: 'long', day: 'numeric', month: 'long' };
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
         return new Date().toLocaleDateString('es-ES', options);
     };
 
@@ -124,12 +136,24 @@ export default function Dashboard({
                                             />
                                         ))}
                                     </div>
+                                    {/* Botón para agregar tarea */}
+                                    <div className="sticky rounded-lg bottom-0 z-10 bg-[#eef2ff]">
+                                        <CreateTask onClick={() => setIsSidebarOpen(true)} />
+                                    </div>
+
+                                    {/* Sidebar de creación */}
+                                    <TaskFormSidebar
+                                        isOpen={isSidebarOpen}
+                                        onClose={() => setIsSidebarOpen(false)}
+                                        onCreate={handleCreateTask}
+                                        onDelete={() => console.log('Tarea eliminada')}
+                                    />
                                 </div>
                             </div>
                         </div>
 
                         {/* Área derecha (calendario y progreso) */}
-                        <div className="hidden lg:flex flex-col w-[400px] xl:w-[450px] pl-6 pr-6">
+                        <div className="hidden mt-4 ml-4 mr-4 align-center lg:flex flex-col w-[400px] xl:w-[450px] pl-6 pr-6">
                             {/* Calendario alineado con el saludo */}
                             <div className="mt-[20px]"> {/* Ajusta este valor según necesidad */}
                                 <Calendar />
