@@ -1,24 +1,24 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({name: "Task"})
+@Entity({name: "tasks"})
 export default class Task{
 
-    @PrimaryGeneratedColumn({name:"_idTask"})
-    id ?: bigint;
+    @PrimaryGeneratedColumn("uuid")
+    uuid: string;
 
-    @Column({name:"title", nullable: true})
+    @Column({name:"title", type: "varchar", length: 50, nullable: false})
     title: string;
 
-    @Column({name:"description"})
+    @Column({name:"description", type: "varchar", length: 250, nullable: true})
     description: string;
 
-    @Column({name:"state", nullable: true})
+    @Column({name:"state", type: "varchar", nullable: true})
     state: string;
 
-    @Column({name:"dateCreation", nullable: true})
+    @CreateDateColumn({type: "timestamp", nullable: true})
     dateCreation: Date;
 
-    @Column({name:"dateLimit", nullable: true})
+    @Column({type: "timestamp", nullable: true})
     dateLimit: Date;
 
 }

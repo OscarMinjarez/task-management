@@ -1,21 +1,21 @@
-import typeorm, { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({name: "User"})
-export default class User{
+@Entity({name: "users"})
+export default class User {
 
-    @PrimaryGeneratedColumn({name:"_idTask"})
-    id ?: bigint;
+    @PrimaryGeneratedColumn("uuid")
+    uuid: string;
 
-    @Column({name:"username",  unique: true, nullable: true})
+    @Column({name:"username", type: "varchar", unique: true, nullable: true})
     username: string;
 
-    @Column({name:"name", nullable: true})
+    @Column({name:"name", type: "varchar", nullable: true})
     name: string;
     
-    @Column({name:"email", unique: true, nullable: true})
+    @Column({name:"email", type: "varchar", unique: true, nullable: true})
     email: string;
 
-    @Column({name:"password", nullable: true})
+    @Column({name:"password", type: "varchar", nullable: true})
     password: string;
 
 

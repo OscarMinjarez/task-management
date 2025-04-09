@@ -40,7 +40,7 @@
     "**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts"
-  ],
+, "src/app/index.js"  ],
   "exclude": [
     "node_modules"
   ]

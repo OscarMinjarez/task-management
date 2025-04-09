@@ -1,0 +1,24 @@
+import { DataSource } from "typeorm";
+import User from "./entities/User";
+import Task from "./entities/Task";
+
+let connection: DataSource;
+
+export async function getConnection(): Promise<DataSource> {
+    if (!connection) {
+        connection = new DataSource({
+            type: "mysql",
+            host: "localhost",
+            port: 3306,
+            username: "root",
+            password: "1234",
+            database: "tasks_management_db",
+            entities: [
+                User, Task
+            ],
+            synchronize: true
+        });
+        await connection.initialize();
+    }
+    return connection;
+}

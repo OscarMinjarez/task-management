@@ -1,7 +1,7 @@
 "use client";
 import Image from 'next/image';
 import logo from 'public/logo.png';
-import { React, useState } from 'react';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
