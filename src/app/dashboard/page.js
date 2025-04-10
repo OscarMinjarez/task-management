@@ -81,11 +81,11 @@ export default function Dashboard({
 
     return (
         <>
-            <div className="dashboard-container bg-[#eef2ff] flex h-screen min-h-full overflow-hidden">
+            <div className="dashboard-container bg-[#eef2ff] flex h-screen min-h-full">
                 <Sidebar />
 
                 {/* Contenedor principal */}
-                <div className="flex flex-col w-full overflow-hidden">
+                <div className="flex flex-col w-full">
                     {/* Header */}
                     <div className="w-full p-6 pb-0">
                         <Header
@@ -96,11 +96,11 @@ export default function Dashboard({
                     </div>
 
                     {/* Contenido debajo del header*/}
-                    <div className="flex flex-1 overflow-hidden">
+                    <div className="flex">
                         {/* Área izquierda */}
-                        <div className="w-full lg:w-[750px] flex flex-col overflow-hidden">
+                        <div className="w-full lg:w-[750px] flex flex-col">
 
-                            <div className="overflow-y-auto h-full">
+                            <div className="h-full w-full justify-center">
                                 {/* saludo y fecha */}
                                 <div className="sticky top-0 z-10 bg-[#eef2ff] pt-4 pb-2 px-6">
                                     <div className='bg-[#c9d6ff] py-3 px-6 rounded-xl'>
