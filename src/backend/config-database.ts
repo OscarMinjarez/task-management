@@ -11,7 +11,7 @@ export async function getConnection(): Promise<DataSource> {
             host: "localhost",
             port: 3306,
             username: "root",
-            password: "1234",
+            password: "2608",
             database: "tasks_management_db",
             entities: [
                 User, Task
