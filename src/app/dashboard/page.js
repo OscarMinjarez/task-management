@@ -96,11 +96,11 @@ export default function Dashboard({
                     </div>
 
                     {/* Contenido debajo del header*/}
-                    <div className="flex">
+                    <div className="flex h-full">
                         {/* Área izquierda */}
                         <div className="w-full lg:w-[750px] flex flex-col">
 
-                            <div className="h-full w-full justify-center">
+                            <div className="w-full h-full justify-center">
                                 {/* saludo y fecha */}
                                 <div className="sticky top-0 z-10 bg-[#eef2ff] pt-4 pb-2 px-6">
                                     <div className='bg-[#c9d6ff] py-3 px-6 rounded-xl'>
@@ -127,7 +127,7 @@ export default function Dashboard({
                                 </div>
 
                                 {/* TaskItems */}
-                                <div>
+                                <div className="">
                                     <div className="space-y-3 px-3">
                                         {tasks.map((task) => (
                                             <TaskItem
@@ -138,7 +138,7 @@ export default function Dashboard({
                                         ))}
                                     </div>
                                     {/* Botón para agregar tarea */}
-                                    <div className="sticky bottom-[0.1px]  z-10 bg-[#eef2ff] py-[2px] px-3">
+                                    <div className="sticky bottom-[0.1px] z-10 bg-[#eef2ff] py-[2px] px-3">
                                         <CreateTask onClick={() => setIsSidebarOpen(true)} />
                                     </div>
 
