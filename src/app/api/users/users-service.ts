@@ -70,3 +70,16 @@ function validateUserInput(data: CreateUserDto): string | null {
     return null; // Todo bien
 }
 
+export async function recoverPasswordByEmail(email: string): Promise<string> {
+    await init();
+
+    const user = await userRepository.findOneBy({ email });
+
+    if (!user) {
+        throw new Error("Correo electrónico no encontrado");
+    }
+
+    return user.password; // ⚠️ Inseguro en la vida real
+}
+
+
