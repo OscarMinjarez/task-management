@@ -26,3 +26,20 @@ export async function create(tasks: CreateTaskDto): Promise<Task> {
     Object.assign(newTask, tasks);
     return await taskRepository.save(newTask);
 }
+export async function updateTaskState(uuid: string, newState: "completado" | "en proceso" | "pendiente"): Promise<Task | null> {
+    await init();
+    const task = await taskRepository.findOneBy({ uuid });
+
+    if (!task) {
+        return null;
+    }
+
+    // Opcional: evitar cambios si el estado es el mismo
+    if (task.state === newState) {
+        return task; // ya está actualizado
+    }
+
+    task.state = newState;
+    return await taskRepository.save(task);
+}
+

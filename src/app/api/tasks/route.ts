@@ -35,4 +35,36 @@ export async function POST(req: NextResponse) {
         return NextResponse.json({ error: error }, { status: 500 });
     }
 }
+import { updateTaskState } from "./tasks-services";
+
+export async function PATCH(req: Request) {
+    try {
+        const body = await req.json();
+        const { uuid, state } = body;
+
+        if (!uuid || !state) {
+            return NextResponse.json({ error: "UUID y nuevo estado son requeridos" }, { status: 400 });
+        }
+
+        const validStates = ["completado", "en proceso", "pendiente"];
+        if (!validStates.includes(state)) {
+            return NextResponse.json({ error: "Estado no válido" }, { status: 400 });
+        }
+
+        const updatedTask = await updateTaskState(uuid, state);
+
+        if (!updatedTask) {
+            return NextResponse.json({ error: "Tarea no encontrada" }, { status: 404 });
+        }
+
+        return NextResponse.json({
+            message: "Estado de la tarea actualizado correctamente",
+            task: updatedTask
+        });
+
+    } catch (error) {
+        return NextResponse.json({ error: "Error al actualizar el estado" }, { status: 500 });
+    }
+}
+
 
