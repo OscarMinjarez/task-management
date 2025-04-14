@@ -61,7 +61,7 @@ function validateUserInput(data: CreateUserDto): string | null {
         return "El username no debe tener más de 15 caracteres";
     }
 
-    // Validar formato de email (sencillo)
+    // Validar formato de email 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return "El email debe ser válido";
@@ -79,7 +79,7 @@ export async function recoverPasswordByEmail(email: string): Promise<string> {
         throw new Error("Correo electrónico no encontrado");
     }
 
-    return user.password; // ⚠️ Inseguro en la vida real
+    return user.password; // no apruebo...
 }
 
 

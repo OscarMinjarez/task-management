@@ -8,7 +8,6 @@ export async function GET(req: Request) {
 
     try {
         if (email) {
-            // Validación básica del correo
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 return NextResponse.json({
@@ -31,7 +30,7 @@ export async function GET(req: Request) {
             });
         }
 
-        // Si no hay email, entonces se devuelven todos los usuarios (flujo original)
+        // Si no hay email, entonces se devuelven todos los usuarios
         const users = await findAllUsers();
         return NextResponse.json({
             message: "Usuarios encontrados",

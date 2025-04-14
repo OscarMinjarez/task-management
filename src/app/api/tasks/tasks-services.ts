@@ -34,7 +34,7 @@ export async function updateTaskState(uuid: string, newState: "completado" | "en
         return null;
     }
 
-    // Opcional: evitar cambios si el estado es el mismo
+    
     if (task.state === newState) {
         return task; // ya está actualizado
     }
