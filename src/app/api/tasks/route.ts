@@ -1,18 +1,29 @@
 import { NextResponse } from "next/server";
-import { create, findAll } from "./tasks-services";
+import { create, findAll, findById, updateTask, deleteTask  } from "./tasks-services";
 import CreateTaskDto from "./dto/create-task-dto";
 
-export async function GET() {
-    try {
-        const tasks = await findAll();
-        return NextResponse.json({
-            message: "Tareas encontradas",
-            tasks
-        });
-    } catch (error) {
-        return NextResponse.json({ error: error }, { status: 500 });
+// Este devuelve todas las tareas
+export async function GET(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const uuid = searchParams.get("uuid");
+
+    if (uuid) {
+        // Buscar una sola tarea por UUID
+        const task = await findById(uuid);
+        if (!task) {
+            return NextResponse.json({ error: "Tarea no encontrada" }, { status: 404 });
+        }
+        return NextResponse.json({ task });
     }
+
+    // Si no hay UUID, retorna todas las tareas
+    const tasks = await findAll();
+    return NextResponse.json({
+        message: "Tareas encontradas",
+        tasks
+    });
 }
+
 
 export async function POST(req: NextResponse) {
     try {
@@ -66,5 +77,42 @@ export async function PATCH(req: Request) {
         return NextResponse.json({ error: "Error al actualizar el estado" }, { status: 500 });
     }
 }
+
+export async function PUT(req: Request) {
+    try {
+        const { uuid, title, description, state, dateLimit } = await req.json();
+
+        if (!uuid) {
+            return NextResponse.json({ error: "UUID requerido" }, { status: 400 });
+        }
+
+        const updated = await updateTask(uuid, { title, description, state, dateLimit });
+
+        if (!updated) {
+            return NextResponse.json({ error: "Tarea no encontrada" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Tarea actualizada", task: updated });
+    } catch (error) {
+        return NextResponse.json({ error: "Error al actualizar" }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: Request) {
+    const { uuid } = await req.json();
+
+    if (!uuid) {
+        return NextResponse.json({ error: "UUID requerido" }, { status: 400 });
+    }
+
+    const deleted = await deleteTask(uuid);
+    if (!deleted) {
+        return NextResponse.json({ error: "Tarea no encontrada" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Tarea eliminada correctamente" });
+}
+
+
 
 
