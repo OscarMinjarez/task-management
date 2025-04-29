@@ -127,7 +127,7 @@ export default function Dashboard({
                                 </div>
 
                                 {/* TaskItems */}
-                                <div className="">
+                                <div className="overflow-auto h-[calc(100vh-250px)]">
                                     <div className="space-y-3 px-3">
                                         {tasks.map((task) => (
                                             <TaskItem

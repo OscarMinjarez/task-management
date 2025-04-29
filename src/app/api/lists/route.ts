@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createList, findAllLists, editList, deleteList } from "./lists-service";
-import CreateListDto from "./dto/create-list-dto";
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);

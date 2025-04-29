@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createUser, findAllUsers } from "./users-service";
-import CreateUserDto from "./dto/create-user-dto";
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);

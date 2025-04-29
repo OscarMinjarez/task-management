@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -33,8 +34,7 @@ export default function RegisterPage() {
       setPasswordsMatch(false);
       return;
     }
-    // Lógica de envío del formulario
-    console.log('Formulario enviado:', formData);
+    register(formData);
   };
 
   return (
@@ -62,6 +62,16 @@ export default function RegisterPage() {
             onChange={handleChange}
             className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Nombre completo"
+            required
+          />
+
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Nombre de usuario"
             required
           />
 
@@ -161,4 +171,18 @@ export default function RegisterPage() {
       </div>
     </div>
   );
+}
+
+async function register(user) {
+  try {
+    const response = await fetch(`http://localhost:3000/api/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(user)
+    });
+  } catch (e) {
+    console.error(e);
+  }
 }
