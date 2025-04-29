@@ -81,11 +81,11 @@ export default function Dashboard({
 
     return (
         <>
-            <div className="dashboard-container bg-[#eef2ff] flex h-screen min-h-full">
+            <div className="dashboard-container bg-[#eef2ff] flex h-screen w-full">
                 <Sidebar />
 
                 {/* Contenedor principal */}
-                <div className="flex flex-col w-full">
+                <div className="flex flex-col w-full max-w-screen-2xl mx-auto">
                     {/* Header */}
                     <div className="w-full p-6 pb-0">
                         <Header
@@ -96,9 +96,9 @@ export default function Dashboard({
                     </div>
 
                     {/* Contenido debajo del header*/}
-                    <div className="flex h-full">
+                    <div className="flex h-full w-full">
                         {/* Área izquierda */}
-                        <div className="w-full lg:w-[750px] flex flex-col">
+                        <div className="flex-grow max-w-4xl flex flex-col">
 
                             <div className="w-full h-full justify-center">
                                 {/* saludo y fecha */}

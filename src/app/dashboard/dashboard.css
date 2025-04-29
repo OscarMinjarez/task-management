@@ -42,3 +42,14 @@
     transform: scale(1);
   }
 }
+
+.dashboard-container {
+  width: 100%;
+  min-width: 100%;
+}
+
+@media (min-width: 1536px) {
+  .dashboard-container {
+    justify-content: center;
+  }
+}

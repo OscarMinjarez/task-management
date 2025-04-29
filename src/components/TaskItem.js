@@ -1,6 +1,5 @@
 "use client";
-import LogroAmarillo from 'public/logro-yellow.png';
-import LogroGris from 'public/logro-gray.png';
+
 import Image from 'next/image';
 import { useState } from 'react';
 import confetti from 'canvas-confetti';
@@ -28,14 +27,15 @@ function ListOptions({ options, value, onChange }) {
 
 export default function TaskItem({ task, onToggleComplete }) {
     const [list, setList] = useState("Personal");
-    const [status, setStatus] = useState("Pendiente");
+    const [status, setStatus] = useState(task.state || "Pendiente");
     const [isHovered, setIsHovered] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(task.completed);
 
     const handleClick = () => {
-        const wasCompleted = task.completed;
+        const wasCompleted = isCompleted;
         onToggleComplete(task.uuid);
-
+        setIsCompleted(!wasCompleted);
         if (!wasCompleted) {
             setIsAnimating(true);
             setTimeout(() => setIsAnimating(false), 1000);
@@ -52,6 +52,28 @@ export default function TaskItem({ task, onToggleComplete }) {
         }
     };
 
+    async function handleStateChange(newState) {
+        setStatus(newState);
+        try {
+            const response = await fetch('/api/tasks', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    uuid: task.uuid,
+                    state: newState,
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                console.error('Error al actualizar estado:', data.error);
+            }
+        } catch (error) {
+            console.error('Error de red al actualizar el estado:', error);
+        }
+    }
+
     return (
         <div className="grid grid-cols-12 gap-4 px-3 bg-white rounded-lg shadow-sm h-[60px] relative">
             {/* Columna para la estrella */}
@@ -61,30 +83,23 @@ export default function TaskItem({ task, onToggleComplete }) {
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                     className="p-1 cursor-pointer group"
-                    aria-label={task.completed ? 'Marcar como pendiente' : 'Marcar como completada'}
+                    aria-label={isCompleted ? 'Marcar como pendiente' : 'Marcar como completada'}
                 >
                     <div className="relative">
-                        <Image
-                            src={LogroGris}
-                            alt="Tarea pendiente"
-                            width={30}
-                            height={30}
-                            className={`transition-all duration-300 ${task.completed ? 'opacity-0' : 'opacity-100'} group-hover:opacity-0`}
-                        />
-                        <Image
-                            src={LogroAmarillo}
-                            alt="Tarea completada"
-                            width={30}
-                            height={30}
-                            className={`absolute top-0 left-0 transition-all duration-300 ${task.completed ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 ${isAnimating ? 'animate-ping' : ''}`}
-                        />
+                    <Image
+                        src={isCompleted ? "/logro-yellow.png" : "/logro-gray.png"}
+                        alt={isCompleted ? "Tarea completada" : "Tarea pendiente"}
+                        width={30}
+                        height={30}
+                        className={`transition-all duration-300 ${isAnimating ? 'animate-ping' : ''}`}
+                    />
                     </div>
                 </button>
             </div>
 
             {/* Columna Tarea */}
             <div className="col-span-5 flex flex-col justify-center">
-                <h3 className={`font-medium ${task.completed ? 'line-through text-gray-400' : ''}`}>
+                <h3 className={`font-medium ${isCompleted ? 'line-through text-gray-400' : ''}`}>
                     {task.title}
                 </h3>
                 <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -108,7 +123,7 @@ export default function TaskItem({ task, onToggleComplete }) {
             <div className="col-span-3 flex items-center gap-2">
                 <StateSelect
                     value={status}
-                    onChange={(val) => setStatus(val)} />
+                    onChange={handleStateChange} />
             </div>
         </div>
     );
