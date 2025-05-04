@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import List from "./List";
 
 @Entity({name: "tasks"})
 export default class Task{
@@ -21,4 +22,6 @@ export default class Task{
     @Column({type: "timestamp", nullable: true})
     dateLimit: Date;
 
+    @ManyToOne(() => List, list => list.tasks)
+    list: List;
 }

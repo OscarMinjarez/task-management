@@ -3,11 +3,11 @@ import React from 'react';
 
 export default function BarProgress({ points }) {
     return (
-        <div className="bg-white rounded-lg w-[90%] p-4 max-w-md mx-4 flex flex-col items-center">
+        <div className="bg-white rounded-lg w-full h-full p-4 flex flex-col items-center justify-center">
             <h3 className="font-semibold text-[#625f5f] mb-3">Tu progreso</h3>
 
             {/* Círculo de progreso */}
-            <div className="relative w-48 h-48 mb-3">
+            <div className="relative w-40 h-40 sm:w-48 sm:h-48 mb-3">
                 {/* Fondo del círculo */}
                 <svg className="w-full h-full" viewBox="0 0 36 36">
                     {/* Track (fondo gris) */}

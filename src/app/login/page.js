@@ -1,10 +1,44 @@
 "use client";
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import logo from 'public/logo.png';
 import { useState } from 'react';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [errorData, setErrorData] = useState({
+    errorMessage: "",
+    shown: false
+  });
+
+  const router = useRouter();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const user = await login(formData);
+      window.localStorage.setItem("user_uuid", user.uuid);
+      router.push("/dashboard");
+    } catch (e) {
+      setErrorData({
+        errorMessage: e.message,
+        shown: true
+      })
+    }
+  };
+
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
@@ -25,6 +59,9 @@ export default function LoginPage() {
           <input
             type="email"
             id="email"
+            name='email'
+            value={formData.email}
+            onChange={handleChange}
             className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Correo electrónico"
             required
@@ -37,6 +74,9 @@ export default function LoginPage() {
               className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Contraseña"
               required
+              name='password'
+              value={formData.password}
+              onChange={handleChange}
               minLength="8"
             />
             <button
@@ -61,10 +101,17 @@ export default function LoginPage() {
             type="submit"
             className="w-full cursor-pointer py-3 px-6 text-white font-medium rounded-xl hover:opacity-90 transition-opacity"
             style={{ backgroundColor: '#6467d1' }}
+            onClick={handleSubmit}
           >
             Iniciar Sesión
           </button>
         </form>
+
+        {errorData.shown && (
+          <div className="mt-4 text-center text-red-600 font-medium">
+            {errorData.errorMessage}
+          </div>
+        )}
 
         <div className="mt-6 text-center space-y-3">
           <a
@@ -83,4 +130,23 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+async function login(user) {
+  try {
+    const response = await fetch(`http://localhost:3000/api/auth`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(user)
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Ocurrió un error");
+    }
+    return data.user;
+  } catch (e) {
+    throw Error(e.message);
+  }
 }

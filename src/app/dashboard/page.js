@@ -154,14 +154,14 @@ export default function Dashboard({
                         </div>
 
                         {/* Área derecha (calendario y progreso) */}
-                        <div className="hidden mt-4 ml-4 mr-4 align-center lg:flex flex-col w-[400px] xl:w-[450px] pl-6 pr-6">
+                        <div className="hidden lg:flex flex-col w-[400px] xl:w-[450px] pl-6 pr-6 overflow-y-auto max-h-[calc(100vh-120px)]">
                             {/* Calendario alineado con el saludo */}
-                            <div className="mt-[20px]"> {/* Ajusta este valor según necesidad */}
+                            <div className="mb-4">
                                 <Calendar />
                             </div>
 
                             {/* Barra de progreso */}
-                            <div className="mt-4">
+                            <div className="flex-grow overflow-hidden">
                                 <BarProgress points={points} />
                             </div>
                         </div>

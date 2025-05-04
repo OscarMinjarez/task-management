@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import List from "./List";
 
 @Entity({name: "users"})
 export default class User {
@@ -18,6 +19,6 @@ export default class User {
     @Column({name:"password", type: "varchar", nullable: true})
     password: string;
 
-
-
+    @OneToMany(() => List, list => list.user)
+    lists: Array<List>;
 }
