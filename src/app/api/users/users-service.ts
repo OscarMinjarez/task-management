@@ -2,7 +2,9 @@ import { getConnection } from "src/backend/config-database";
 import { DataSource, Repository } from "typeorm";
 import User from "src/backend/entities/User";
 import CreateUserDto from "./dto/create-user-dto";
+import bcrypt from "bcrypt";
 
+const SALT_ROUNDS = 10;
 let connection: DataSource;
 let userRepository: Repository<User>;
 
@@ -11,15 +13,29 @@ export async function init() {
     userRepository = connection.getRepository(User);
 }
 
+async function isUsernameTaken(username: string): Promise<boolean> {
+    await init();
+    const existingUser = await userRepository.findOneBy({ username });
+    return !!existingUser;
+}
+
 export async function createUser(data: CreateUserDto): Promise<User> {
     const validationError = validateUserInput(data);
     if (validationError) {
         throw new Error(validationError);
     }
 
+    if (await isUsernameTaken(data.username)) {
+        throw new Error("El nombre de usuario ya está en uso");
+    }
+
     await init();
     const newUser = new User();
     Object.assign(newUser, data);
+
+    // Antes de guardar, encriptar la contraseña
+    newUser.password = await hashPassword(data.password);
+
     return await userRepository.save(newUser);
 }
 
@@ -36,7 +52,6 @@ function validateUserInput(data: CreateUserDto): string | null {
 
     const whitespaceRegex = /^\s*$/;
 
-    // Verificar campos vacíos o sólo con espacios
     if (
         !username || whitespaceRegex.test(username) ||
         !name || whitespaceRegex.test(name) ||
@@ -46,28 +61,24 @@ function validateUserInput(data: CreateUserDto): string | null {
         return "Todos los campos son requeridos y no deben estar vacíos";
     }
 
-    // Validar longitud mínima de contraseña
     if (password.length < 8) {
         return "La contraseña debe tener al menos 8 caracteres";
     }
 
-    // Validar que el nombre no contenga números
     if (/\d/.test(name)) {
         return "El nombre no debe contener números";
     }
 
-    // Validar que el username no supere los 15 caracteres
     if (username.length > 15) {
         return "El username no debe tener más de 15 caracteres";
     }
 
-    // Validar formato de email 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return "El email debe ser válido";
     }
 
-    return null; // Todo bien
+    return null;
 }
 
 export async function recoverPasswordByEmail(email: string): Promise<string> {
@@ -79,7 +90,19 @@ export async function recoverPasswordByEmail(email: string): Promise<string> {
         throw new Error("Correo electrónico no encontrado");
     }
 
-    return user.password; // no apruebo...
+    return user.password;
 }
+
+
+
+export async function hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, SALT_ROUNDS);
+}
+
+export async function comparePasswords(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return await bcrypt.compare(plainPassword, hashedPassword);
+}
+
+
 
 
