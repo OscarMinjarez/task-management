@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import logo from 'public/logo.png';
 
@@ -14,6 +15,11 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: ''
   });
+  const [errorData, setErrorData] = useState({
+    errorMessage: "",
+    shown: false
+  });
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,13 +34,22 @@ export default function RegisterPage() {
     setPasswordsMatch(formData.password === value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       setPasswordsMatch(false);
       return;
     }
-    register(formData);
+    try {
+      const user = await register(formData);
+      window.localStorage.setItem("user_uuid", user.uuid);
+      router.push("/dashboard");
+    } catch (e) {
+      setErrorData({
+        errorMessage: e.message,
+        shown: true
+      })
+    }
   };
 
   return (
@@ -62,7 +77,6 @@ export default function RegisterPage() {
             onChange={handleChange}
             className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Nombre completo"
-            required
           />
 
           <input
@@ -72,7 +86,6 @@ export default function RegisterPage() {
             onChange={handleChange}
             className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Nombre de usuario"
-            required
           />
 
           <input
@@ -82,7 +95,6 @@ export default function RegisterPage() {
             onChange={handleChange}
             className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Correo electrónico"
-            required
           />
 
           <div className="relative">
@@ -93,7 +105,6 @@ export default function RegisterPage() {
               onChange={handleChange}
               className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Contraseña"
-              required
               minLength="8"
             />
             <button
@@ -123,7 +134,6 @@ export default function RegisterPage() {
               onBlur={validatePasswords}
               className={`w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 ${!passwordsMatch ? 'focus:ring-red-500' : 'focus:ring-indigo-500'}`}
               placeholder="Confirmar contraseña"
-              required
               minLength="8"
             />
             <button
@@ -160,6 +170,12 @@ export default function RegisterPage() {
           </button>
         </form>
 
+        {errorData.shown && (
+          <div className="mt-4 text-center text-red-600 font-medium">
+            {errorData.errorMessage}
+          </div>
+        )}
+
         <div className="mt-6 text-center">
           <p className="text-sm text-[#6467d1]">
             ¿Ya tienes una cuenta?{' '}
@@ -182,7 +198,12 @@ async function register(user) {
       },
       body: JSON.stringify(user)
     });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Ocurrió un error");
+    }
+    return data.user;
   } catch (e) {
-    console.error(e);
+    throw Error(e.message);
   }
 }
