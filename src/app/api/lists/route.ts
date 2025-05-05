@@ -36,7 +36,7 @@ export async function GET(req: Request) {
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
-        const { uuid, name, color, userUuid, tasks } = body;
+        const { uuid, name, userUuid } = body;
         if (!uuid) {
             return NextResponse.json({ 
                 error: "Por favor insertar el id de la lista a editar" 
@@ -44,9 +44,9 @@ export async function PUT(req: Request) {
         }
         const updated = await editList(uuid.trim(), {
             ...(name && { name: name.trim() }),
-            ...(color && { color: color.trim() }),
+            // ...(color && { color: color.trim() }),
             ...(userUuid && { userUuid: userUuid }),
-            ...(tasks && { tasks: tasks })
+            // ...(tasks && { tasks: tasks })
         });
         if (!updated) {
             return NextResponse.json({ 
@@ -57,6 +57,28 @@ export async function PUT(req: Request) {
             message: "Lista editada correctamente",
             list: updated
         });
+    } catch (error: any) {
+        return NextResponse.json({ 
+            error: error.message 
+        }, { status: 400 });
+    }
+}
+
+export async function POST(req: Request) {
+    try {
+        const body = await req.json();
+        const { name, color, userUuid, tasks } = body;
+
+        const newList = await createList({
+            name: name.trim(),
+            color: color.trim(),
+            userUuid: userUuid,
+            tasks: tasks || []
+        });
+        return NextResponse.json({
+            message: "Lista creada correctamente",
+            list: newList
+        }, { status: 201 });
     } catch (error: any) {
         return NextResponse.json({ 
             error: error.message 
