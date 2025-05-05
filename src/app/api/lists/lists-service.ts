@@ -22,7 +22,7 @@ export async function createList(data: CreateListDto): Promise<List> {
     return await listRepository.save(newList);
 }
 
-export async function editList(uuid: string ,data: Partial<Pick<List, "name" | "color">>): Promise<List | null> {
+export async function editList(uuid: string ,data: Partial<Pick<List, "name" | "color" | "user" | "tasks">>): Promise<List | null> {
     await init();
     const list = await listRepository.findOneBy({ uuid });
     if (!list) return null;
@@ -59,3 +59,7 @@ export async function deleteList(uuid: string): Promise<boolean> {
     return result.affected !== 0;
 }
 
+export async function findById(uuid: string): Promise<List | null> {
+    await init();
+    return await listRepository.findOneBy({ uuid });
+}

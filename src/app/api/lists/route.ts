@@ -24,10 +24,7 @@ export async function GET(req: Request) {
 
         // Si no hay nombre, entonces se devuelven todos las listas
         const lists = await findAllLists();
-        return NextResponse.json({
-            message: "Listas encontradas",
-            lists
-        });
+        return NextResponse.json({lists}, {status: 200});
 
     } catch (error) {
         return NextResponse.json({ error }, { status: 500 });
@@ -38,11 +35,13 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const {name, color } = body;
+        const {name, color, user, tasks } = body;
 
         const newList = await createList({
             name: name.trim(),
             color: color.trim(),
+            user: user,
+            tasks: tasks
         });
 
         return NextResponse.json({
@@ -57,7 +56,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
-        const {uuid, name, color} = body;
+        const {uuid, name, color, user, tasks} = body;
 
         if (!uuid){
             return NextResponse.json({ error: "Por favor insertar el id de la lista a editar" }, { status: 400 });
@@ -70,7 +69,9 @@ export async function PUT(req: Request) {
 
         const updated = await editList(uuid.trim() ,{
             name: name.trim(),
-            color: color.trim(),
+            color: color.trim(),            
+            user: user,
+            tasks: tasks
         });
 
         if (!updated){
