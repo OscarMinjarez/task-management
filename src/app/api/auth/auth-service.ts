@@ -16,10 +16,10 @@ export async function login(email: string, password: string): Promise<User> {
         email
     });
     if (!user) {
-        throw new Error("Usuario no encontrado.");
+        throw new Error("Credenciales inválidas");
     }
-    if (password !== user.password) {
-        throw new Error("Credenciales inválidas.");
+    if (password !== user.password)  {
+        throw new Error("Credenciales inválidas");
     }
     return user;
 }

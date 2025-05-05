@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import logo from 'public/logo.png';
@@ -19,7 +19,18 @@ export default function RegisterPage() {
     errorMessage: "",
     shown: false
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const router = useRouter();
+
+  // Validación en tiempo real de contraseñas
+  useEffect(() => {
+    if (formData.password && formData.confirmPassword) {
+      setPasswordsMatch(formData.password === formData.confirmPassword);
+    } else {
+      setPasswordsMatch(true); // Reset cuando los campos están vacíos
+    }
+  }, [formData.password, formData.confirmPassword]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,36 +38,95 @@ export default function RegisterPage() {
       ...prev,
       [name]: value
     }));
-  };
 
-  const validatePasswords = (e) => {
-    const { value } = e.target;
-    setPasswordsMatch(formData.password === value);
+    // Resetear errores al escribir
+    if (errorData.shown) {
+      setErrorData({
+        errorMessage: "",
+        shown: false
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validación final antes de enviar
     if (formData.password !== formData.confirmPassword) {
       setPasswordsMatch(false);
       return;
     }
+
+    setIsSubmitting(true);
+
     try {
       const user = await register(formData);
-      window.localStorage.setItem("user_uuid", user.uuid);
-      router.push("/dashboard");
+      setShowSuccessModal(true);
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+
     } catch (e) {
-      setErrorData({
-        errorMessage: e.message,
-        shown: true
-      })
+      // Manejo de errores
+      if (e.message.includes("username") || e.message.includes("nombre de usuario")) {
+        setErrorData({
+          errorMessage: "El nombre de usuario ya está registrado",
+          shown: true
+        });
+      } else if (e.message.includes("email") || e.message.includes("correo")) {
+        setErrorData({
+          errorMessage: "El correo electrónico ya está registrado",
+          shown: true
+        });
+      } else {
+        setErrorData({
+          errorMessage: e.message,
+          shown: true
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
 
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
       style={{ backgroundColor: '#c9d6ff' }}
     >
+      {/* Modal de éxito */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-xl">
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">¡Registro exitoso!</h2>
+              <p className="text-gray-600 mb-6 text-center">
+                Tu cuenta ha sido creada correctamente
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulario de registro */}
       <div className="w-full max-w-md rounded-lg p-8">
         <div className="flex flex-col items-center">
           <Image
@@ -75,8 +145,9 @@ export default function RegisterPage() {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full cursor-pointer bg-white text-center px-6 py-3 rounded-xl text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Nombre completo"
+            required
           />
 
           <input
@@ -84,8 +155,9 @@ export default function RegisterPage() {
             name="username"
             value={formData.username}
             onChange={handleChange}
-            className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full cursor-pointer bg-white text-center px-6 py-3 rounded-xl text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Nombre de usuario"
+            required
           />
 
           <input
@@ -93,20 +165,25 @@ export default function RegisterPage() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full cursor-pointer bg-white text-center px-6 py-3 rounded-xl text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Correo electrónico"
+            required
           />
 
+          {/* Campo de contraseña */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full cursor-pointer bg-white text-center px-6 py-3 rounded-xl text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Contraseña"
               minLength="8"
+              required
             />
+
+            {/* Botón de visibilidad */}
             <button
               type="button"
               className="absolute right-3 top-3.5 text-[#6467d1]"
@@ -125,17 +202,26 @@ export default function RegisterPage() {
             </button>
           </div>
 
+          {/* Confirmación de Contraseña */}
           <div className="relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              onBlur={validatePasswords}
-              className={`w-full cursor-pointer bg-white text-center px-6 py-3 border-none rounded-xl text-black placeholder:text-black focus:outline-none focus:ring-2 ${!passwordsMatch ? 'focus:ring-red-500' : 'focus:ring-indigo-500'}`}
+              className={`w-full cursor-pointer bg-white text-center px-6 py-3 border ${formData.confirmPassword
+                ? passwordsMatch ? 'border-green-500' : 'border-red-500'
+                : 'border-none'
+                } rounded-xl text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 ${formData.confirmPassword
+                  ? passwordsMatch ? 'focus:ring-green-500' : 'focus:ring-red-500'
+                  : 'focus:ring-indigo-500'
+                }`}
               placeholder="Confirmar contraseña"
               minLength="8"
+              required
             />
+
+            {/* Botón de visibilidad */}
             <button
               type="button"
               className="absolute right-3 top-3.5 text-[#6467d1]"
@@ -154,19 +240,32 @@ export default function RegisterPage() {
             </button>
           </div>
 
-          {!passwordsMatch && (
+          {/* Mensajes de validación */}
+          {formData.confirmPassword && !passwordsMatch && (
             <p className="text-red-500 text-sm text-center">
               Las contraseñas no coinciden
+            </p>
+          )}
+          {formData.confirmPassword && passwordsMatch && (
+            <p className="text-green-500 text-sm text-center">
+              Las contraseñas coinciden
             </p>
           )}
 
           <button
             type="submit"
-            className="w-full cursor-pointer py-3 px-6 text-white font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
-            style={{ backgroundColor: '#6467d1' }}
-            disabled={!passwordsMatch}
+            className="w-full cursor-pointer py-3 px-6 text-white font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 bg-[#6467d1]"
+            disabled={!passwordsMatch || isSubmitting}
           >
-            Registrarse
+            {isSubmitting ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Registrando...
+              </span>
+            ) : 'Registrarse'}
           </button>
         </form>
 
@@ -196,14 +295,22 @@ async function register(user) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(user)
+      body: JSON.stringify({
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        password: user.password
+      })
     });
+
     const data = await response.json();
+
     if (!response.ok) {
-      throw new Error(data.error || "Ocurrió un error");
+      throw new Error(data.error || "Ocurrió un error durante el registro");
     }
+
     return data.user;
   } catch (e) {
-    throw Error(e.message);
+    throw new Error(e.message);
   }
 }

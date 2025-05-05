@@ -9,8 +9,10 @@ let connection: DataSource;
 let userRepository: Repository<User>;
 
 export async function init() {
-    connection = await getConnection();
-    userRepository = connection.getRepository(User);
+    if (!connection || !connection.isInitialized) {
+        connection = await getConnection();
+        userRepository = connection.getRepository(User);
+    }
 }
 
 async function isUsernameTaken(username: string): Promise<boolean> {
@@ -93,16 +95,20 @@ export async function recoverPasswordByEmail(email: string): Promise<string> {
     return user.password;
 }
 
-
-
 export async function hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, SALT_ROUNDS);
+    return bcrypt.hash(password, SALT_ROUNDS);
 }
 
 export async function comparePasswords(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return await bcrypt.compare(plainPassword, hashedPassword);
+    return bcrypt.compare(plainPassword, hashedPassword);
 }
 
-
-
+// Función para encontrar un usuario por su email
+export async function findUserByEmail(email: string): Promise<User | null> {
+    await init();
+    return await userRepository.findOne({ 
+        where: { email },
+        select: ["uuid", "name", "email", "username", "password"] 
+    });
+}
 
