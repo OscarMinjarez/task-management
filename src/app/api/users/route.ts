@@ -1,11 +1,26 @@
 import { NextResponse } from "next/server";
-import { createUser, findAllUsers } from "./users-service";
+import { createUser, findAllUsers, getById } from "./users-service";
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email");
+    const id = searchParams.get("id");
 
     try {
+        if (id) {
+            const userId = id;
+            const user = await getById(userId);
+            if (!user) {
+                return NextResponse.json({
+                    message: "No se encontró un usuario con ese ID"
+                }, { status: 404 });
+            }
+
+            return NextResponse.json({
+                message: "Usuario encontrado",
+                user
+            });
+        }
         if (email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
@@ -28,14 +43,12 @@ export async function GET(req: Request) {
                 password: user.password
             });
         }
-
-        // Si no hay email, entonces se devuelven todos los usuarios
+        // Si no hay parámetros, devolver todos los usuarios
         const users = await findAllUsers();
         return NextResponse.json({
             message: "Usuarios encontrados",
             users
         });
-
     } catch (error) {
         return NextResponse.json({ error }, { status: 500 });
     }

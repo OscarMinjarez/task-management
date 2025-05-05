@@ -13,6 +13,11 @@ export async function init() {
     userRepository = connection.getRepository(User);
 }
 
+export async function getById(id: string): Promise<User | null> {
+    await init();
+    return await userRepository.findOneBy({ uuid: id });
+}
+
 async function isUsernameTaken(username: string): Promise<boolean> {
     await init();
     const existingUser = await userRepository.findOneBy({ username });
