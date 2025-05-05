@@ -18,21 +18,24 @@ export default function Dashboard({
     const [tasks, setTasks] = useState([]);
     const [unlockedAchievement, setUnlockedAchievement] = useState(null);
     const [username, setUsername] = useState(initialUsername);
-    const [user, setUser] = useState(null);
 
-    useEffect(async () => {
-        try {
-            const response = await fetch(`http://localhost:3000/api/users?id=${window.localStorage.getItem("user_uuid")}`);
-            const data = await response.json();
-            if (!response.ok) {
-                console.error("Error fetching user:", data.message);
-                return;
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                const userId = window.localStorage.getItem("user_uuid");
+                if (!userId) return;
+                const response = await fetch(`http://localhost:3000/api/users?id=${userId}`);
+                const data = await response.json();
+                if (!response.ok) {
+                    console.error("Error fetching user:", data.message);
+                    return;
+                }
+                setUsername(data.user.name);
+            } catch (e) {
+                console.error("Fetch error:", e);
             }
-            setUser(data.user);
-            setUsername(data.user.username);
-        } catch (e) {
-            console.error(e);
         }
+        fetchUserData();
     }, []);
 
     const rewards = [
