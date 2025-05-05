@@ -2,6 +2,7 @@ import { getConnection } from "src/backend/config-database";
 import { DataSource, Repository } from "typeorm";
 import CreateTaskDto from "./dto/create-task-dto";
 import Task from "src/backend/entities/Task";
+import List from "src/backend/entities/List";
 
 let connection: DataSource;
 let taskRepository: Repository<Task>;
@@ -16,6 +17,9 @@ export async function findAll(): Promise<Task[]> {
     return await taskRepository.find({
         order: {
             dateCreation: "ASC"
+        },
+        relations: {
+            list: true
         }
     });
 }
@@ -49,14 +53,28 @@ export async function findById(uuid: string): Promise<Task | null> {
 
 export async function updateTask(
     uuid: string,
-    data: Partial<Pick<Task, "title" | "description" | "state" | "dateLimit">>
+    data: Partial<Pick<Task, "title" | "description" | "state" | "dateLimit">> & { list?: string }
 ): Promise<Task | null> {
     await init();
-    const task = await taskRepository.findOneBy({ uuid });
+    const task = await taskRepository.findOne({
+        where: { uuid },
+        relations: ['list'],
+    });
 
     if (!task) return null;
 
     Object.assign(task, data);
+
+    if (data.list) {
+        const listRepo = connection.getRepository(List);
+        const newList = await listRepo.findOneBy({ name: data.list });
+        if (newList) {
+            task.list = newList;
+        } else {
+            console.warn(`Lista "${data.list}" no encontrada`);
+        }
+    }
+
     return await taskRepository.save(task);
 }
 

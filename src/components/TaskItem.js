@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import confetti from 'canvas-confetti';
 import StateSelect from './StateSelect';
+import UserLists from "./UserLists"
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -26,7 +27,8 @@ function ListOptions({ options, value, onChange }) {
 }
 
 export default function TaskItem({ task, onToggleComplete }) {
-    const [list, setList] = useState("Personal");
+    const { lists } = UserLists();
+    const [list, setList] = useState(task.list?.name || "Personal");
     const [status, setStatus] = useState(task.state || "Pendiente");
     const [isHovered, setIsHovered] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -74,6 +76,27 @@ export default function TaskItem({ task, onToggleComplete }) {
         }
     }
 
+    const handleListChange = async (newListName) => {
+        setList(newListName);
+        try {
+            const response = await fetch('http://localhost:3000/api/tasks', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    uuid: task.uuid,
+                    list: newListName,
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                console.error("Error al actualizar lista:", data.error);
+            }
+        } catch (error) {
+            console.error("Error de red al actualizar lista:", error);
+        }
+    };
     return (
         <div className="grid grid-cols-12 gap-4 px-3 bg-white rounded-lg shadow-sm h-[60px] relative">
             {/* Columna para la estrella */}
@@ -113,9 +136,9 @@ export default function TaskItem({ task, onToggleComplete }) {
             {/* Columna Lista */}
             <div className="col-span-3 flex items-center">
                 <ListOptions
-                    options={["Escuela", "Cocina", "Personal", "Social"]}
-                    value={list}
-                    onChange={(e) => setList(e.target.value)}
+                    options={["Personal", ...lists.map(l => l.name).filter(name => name !== "Personal")]}
+                    value={task.list?.name ?? "Personal"}
+                    onChange={(e) => handleListChange(e.target.value)}
                 />
             </div>
 

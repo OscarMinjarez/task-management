@@ -109,6 +109,7 @@ export default function Dashboard({
                     {/* Header */}
                     <div className="w-full p-6 pb-0">
                         <Header
+                            username={username}
                             points={points}
                             pageTitle="Dashboard"
                             pageIcon="home"
