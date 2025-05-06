@@ -1,5 +1,5 @@
 import { getConnection } from "src/backend/config-database";
-import { DataSource, Repository } from "typeorm";
+import { Between, DataSource, Repository } from "typeorm";
 import CreateTaskDto from "./dto/create-task-dto";
 import Task from "src/backend/entities/Task";
 import List from "src/backend/entities/List";
@@ -50,6 +50,21 @@ export async function findById(uuid: string): Promise<Task | null> {
     await init();
     return await taskRepository.findOneBy({ uuid });
 }
+
+export async function findByDate(dateStart: Date, dateEnd: Date): Promise< Task[]>{
+
+    await init();
+
+    const dateStartOne = new Date(dateStart.toISOString().split('T')[0]);
+    const dateEndOne = new Date(dateEnd.toISOString().split('T')[0]);
+
+    return await taskRepository.find({
+        where: {
+            dateCreation: Between(dateStartOne, dateEndOne)
+        }
+    });
+
+} 
 
 export async function updateTask(
     uuid: string,
