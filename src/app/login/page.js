@@ -29,6 +29,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const user = await login(formData);
+      console.log(user);
       window.localStorage.setItem("user_uuid", user.uuid);
       router.push("/dashboard");
     } catch (e) {

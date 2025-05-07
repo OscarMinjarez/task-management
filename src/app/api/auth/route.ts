@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         // Autenticación exitosa
         return NextResponse.json({
             user: {
-                id: user.uuid,
+                uuid: user.uuid,
                 name: user.name,
                 email: user.email,
                 username: user.username
