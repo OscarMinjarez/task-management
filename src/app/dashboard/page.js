@@ -11,12 +11,32 @@ import CreateTask from '../../components/CreateTask';
 import TaskFormSidebar from '../../components/TaskFormSidebar';
 
 export default function Dashboard({
-    username = "Usuario",
+    initialUsername = "Usuario",
 }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [points, setPoints] = useState(0);
     const [tasks, setTasks] = useState([]);
     const [unlockedAchievement, setUnlockedAchievement] = useState(null);
+    const [username, setUsername] = useState(initialUsername);
+
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                const userId = window.localStorage.getItem("user_uuid");
+                if (!userId) return;
+                const response = await fetch(`http://localhost:3000/api/users?id=${userId}`);
+                const data = await response.json();
+                if (!response.ok) {
+                    console.error("Error fetching user:", data.message);
+                    return;
+                }
+                setUsername(data.user.name);
+            } catch (e) {
+                console.error("Fetch error:", e);
+            }
+        }
+        fetchUserData();
+    }, []);
 
     const rewards = [
         { level: 1, badge: "🥉", name: "Principiante", points: 100 },
@@ -89,6 +109,7 @@ export default function Dashboard({
                     {/* Header */}
                     <div className="w-full p-6 pb-0">
                         <Header
+                            username={username}
                             points={points}
                             pageTitle="Dashboard"
                             pageIcon="home"

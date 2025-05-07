@@ -80,13 +80,13 @@ export async function PATCH(req: Request) {
 
 export async function PUT(req: Request) {
     try {
-        const { uuid, title, description, state, dateLimit } = await req.json();
+        const { uuid, title, description, state, dateLimit, list } = await req.json();
 
         if (!uuid) {
             return NextResponse.json({ error: "UUID requerido" }, { status: 400 });
         }
 
-        const updated = await updateTask(uuid, { title, description, state, dateLimit });
+        const updated = await updateTask(uuid, { title, description, state, dateLimit, list });
 
         if (!updated) {
             return NextResponse.json({ error: "Tarea no encontrada" }, { status: 404 });
