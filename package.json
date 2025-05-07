@@ -21,6 +21,7 @@
     "react-confetti-explosion": "^2.1.2",
     "react-dom": "^19.0.0",
     "react-select": "^5.10.1",
+    "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.22",
     "use-sound": "^5.0.0"
   },
