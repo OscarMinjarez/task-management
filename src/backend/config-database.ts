@@ -12,11 +12,8 @@ export async function getConnection(): Promise<DataSource> {
             host: "localhost",
             port: 3306,
             username: "root",
-<<<<<<< Updated upstream
             password: "itson",
-=======
-            password: "1234",
->>>>>>> Stashed changes
+
             database: "tasks_management_db",
             entities: [
                 User, Task, List
