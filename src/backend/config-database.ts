@@ -13,7 +13,6 @@ export async function getConnection(): Promise<DataSource> {
             port: 3306,
             username: "root",
             password: "itson",
-
             database: "tasks_management_db",
             entities: [
                 User, Task, List
