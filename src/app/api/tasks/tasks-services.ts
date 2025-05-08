@@ -1,5 +1,5 @@
 import { getConnection } from "src/backend/config-database";
-import { Between, DataSource, Repository } from "typeorm";
+import { Between, DataSource, Repository, Equal } from "typeorm";
 import CreateTaskDto from "./dto/create-task-dto";
 import Task from "src/backend/entities/Task";
 import List from "src/backend/entities/List";
@@ -51,7 +51,7 @@ export async function findById(uuid: string): Promise<Task | null> {
     return await taskRepository.findOneBy({ uuid });
 }
 
-export async function findByDate(dateStart: Date, dateEnd: Date): Promise< Task[]>{
+export async function findByTwoDates(dateStart: Date, dateEnd: Date): Promise< Task[]>{
 
     await init();
 
@@ -64,7 +64,25 @@ export async function findByDate(dateStart: Date, dateEnd: Date): Promise< Task[
         }
     });
 
-} 
+}
+
+export async function findByOneDate(date: Date): Promise< Task[]>{
+
+    await init();
+
+    const dateString = new Date(date.toISOString().split('T')[0]);
+    
+    return await taskRepository.find({
+
+        where: {
+
+            dateLimit: Equal(dateString)
+
+        }
+
+    })
+
+}
 
 export async function updateTask(
     uuid: string,

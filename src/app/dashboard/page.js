@@ -16,6 +16,8 @@ export default function Dashboard({
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [points, setPoints] = useState(0);
     const [tasks, setTasks] = useState([]);
+    const [filteredTasks, setFilteredTasks] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
     const [unlockedAchievement, setUnlockedAchievement] = useState(null);
     const [username, setUsername] = useState(initialUsername);
 
@@ -37,6 +39,30 @@ export default function Dashboard({
         }
         fetchUserData();
     }, []);
+
+    useEffect(() => {
+        async function fetchLimitDate(){
+
+            if (selectedDate) {
+                const dateSelectedString = new Date(selectedDate.toISOString().split('T')[0]);
+                
+                const response = await fetch(`http://localhost:3000/api/tasks/limitdate?date=${dateSelectedString}`);
+                const jsonTasks = await response.json(); 
+                const tasks = jsonTasks.tasks;
+                console.log(tasks);
+                setFilteredTasks(tasks);
+            } else {
+                setFilteredTasks(tasks);
+            }
+
+        }
+        fetchLimitDate();
+    }, [selectedDate, tasks]);
+
+    const formatDate = (date) => {
+        if (!date) return null;
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
 
     const rewards = [
         { level: 1, badge: "🥉", name: "Principiante", points: 100 },
@@ -101,12 +127,26 @@ export default function Dashboard({
         }]);
     };
 
+    const handleDateSelect = (date) => {
+        setSelectedDate(date);
+    };
+
+    // Limpiar el filtro de fecha
+    const clearDateFilter = () => {
+        setSelectedDate(null);
+    };
+
     // Obtener la fecha actual formateada
     const getCurrentDate = () => {
         const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
         return new Date().toLocaleDateString('es-ES', options);
     };
 
+    const getSelectedDateFormatted = () => {
+        if (!selectedDate) return null;
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        return selectedDate.toLocaleDateString('es-ES', options);
+    };
 
     const checkAchievements = (currentPoints) => {
         const newAchievement = rewards.find(reward =>
@@ -154,11 +194,28 @@ export default function Dashboard({
                                 {/* saludo y fecha */}
                                 <div className="sticky top-0 z-10 bg-[#eef2ff] pt-4 pb-2 px-6">
                                     <div className='bg-[#c9d6ff] py-3 px-6 rounded-xl'>
-                                        <div className="flex items-center gap-4 mt-1">
-                                            <p className="text-lg text-black font-bold">¡Hola {username}!</p>
-                                        </div>
-                                        <div className='flex items-center gap-4 mt-1'>
-                                            <p className="text-lg text-black">{getCurrentDate()}</p>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-4 mt-1">
+                                                    <p className="text-lg text-black font-bold">¡Hola {username}!</p>
+                                                </div>
+                                                <div className='flex items-center gap-4 mt-1'>
+                                                    <p className="text-lg text-black">{getCurrentDate()}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            {selectedDate && (
+                                                <div className="flex flex-col items-end">
+                                                    <p className="text-sm text-gray-700">Mostrando tareas para:</p>
+                                                    <p className="text-md font-medium">{getSelectedDateFormatted()}</p>
+                                                    <button 
+                                                        onClick={clearDateFilter}
+                                                        className="text-sm text-blue-600 hover:text-blue-800 mt-1"
+                                                    >
+                                                        Ver todas las tareas
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -178,14 +235,24 @@ export default function Dashboard({
 
                                 {/* TaskItems */}
                                 <div className="overflow-auto h-[calc(100vh-250px)]">
-                                    <div className="space-y-3 px-3">
-                                        {tasks.map((task) => (
-                                            <TaskItem
-                                                key={task.uuid}
-                                                task={task}
-                                                onToggleComplete={() => toggleTaskCompletion(task.uuid)}
-                                            />
-                                        ))}
+                                <div className="space-y-3 px-3">
+                                        {filteredTasks.length > 0 ? (
+                                            filteredTasks.map((task) => (
+                                                <TaskItem
+                                                    key={task.uuid}
+                                                    task={task}
+                                                    onToggleComplete={() => toggleTaskCompletion(task.uuid)}
+                                                />
+                                            ))
+                                        ) : (
+                                            <div className="text-center py-8 text-gray-500">
+                                                {selectedDate ? (
+                                                    <p>No hay tareas para la fecha seleccionada.</p>
+                                                ) : (
+                                                    <p>No hay tareas disponibles.</p>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                     {/* Botón para agregar tarea */}
                                     <div className="sticky bottom-[0.1px] z-10 bg-[#eef2ff] py-[2px] px-3">
@@ -198,6 +265,7 @@ export default function Dashboard({
                                         onClose={() => setIsSidebarOpen(false)}
                                         onCreate={handleCreateTask}
                                         onDelete={() => console.log('Tarea eliminada')}
+                                        preselectedDate={selectedDate}
                                     />
                                 </div>
                             </div>
@@ -207,7 +275,10 @@ export default function Dashboard({
                         <div className="hidden lg:flex flex-col w-[400px] xl:w-[450px] pl-6 pr-6 overflow-y-auto max-h-[calc(100vh-120px)]">
                             {/* Calendario alineado con el saludo */}
                             <div className="mb-4">
-                                <Calendar />
+                            <Calendar 
+                                    onChange={handleDateSelect} 
+                                    selectedDate={selectedDate}
+                                />
                             </div>
 
                             {/* Barra de progreso */}

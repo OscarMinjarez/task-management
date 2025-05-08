@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-export default function Calendar({ onChange, selectedDates = [] }) {
+export default function Calendar({ onChange, selectedDate = [] }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const today = new Date(); // Día actual para comparar
 
@@ -28,11 +28,32 @@ export default function Calendar({ onChange, selectedDates = [] }) {
     );
   };
 
+  const isSelectedDay = (day) => {
+    if (!selectedDate) return false;
+    
+    return (
+      day === selectedDate.getDate() &&
+      currentDate.getMonth() === selectedDate.getMonth() &&
+      currentDate.getFullYear() === selectedDate.getFullYear()
+    );
+  };
+
   const navigateMonth = (direction) => {
     setCurrentDate(new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + (direction === "next" ? 1 : -1)
     ));
+  };
+
+  const handleDayClick = (day) => {
+    if (onChange) {
+      const selectedDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        day
+      );
+      onChange(selectedDate);
+    }
   };
 
   const renderCalendar = () => {
@@ -50,9 +71,11 @@ export default function Calendar({ onChange, selectedDates = [] }) {
       days.push(
         <button
           key={day}
+          onClick={() => handleDayClick(day)}
           className={`
             w-8 h-8 flex items-center justify-center rounded-full text-sm hover:bg-[#c9d6ff] cursor-pointer font-medium
-            ${isCurrentDay(day) ? "!bg-[#c9d6ff]" : ""}
+            ${isCurrentDay(day) ? "bg-[#c9d6ff]" : ""}
+            ${isSelectedDay(day) ? "bg-[#6467d1] text-white" : ""}
           `}
         >
           {day}
