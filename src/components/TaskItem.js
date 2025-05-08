@@ -134,7 +134,7 @@ export default function TaskItem({ task, onToggleComplete }) {
             </div>
 
             {/* Columna Lista */}
-            <div className="col-span-3 flex items-center">
+            <div className="col-span-3 flex items-center gap-2">
                 <ListOptions
                     options={["Personal", ...lists.map(l => l.name).filter(name => name !== "Personal")]}
                     value={task.list?.name ?? "Personal"}

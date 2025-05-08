@@ -63,6 +63,35 @@ export default function Dashboard({
         }));
     };
 
+    async function getTasksFromBackend() {
+        try {
+            const userId = window.localStorage.getItem("user_uuid");
+            if (!userId) return [];
+            const response = await fetch(`http://localhost:3000/api/users?id=${userId}`, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+            const data = await response.json();
+            if (!response.ok || !data.user) {
+                console.error("Error al obtener usuario:", data.message);
+                return [];
+            }
+                const tasks = data.user.lists.flatMap(list =>
+                list.tasks.map(task => ({
+                    ...task,
+                    listName: list.name,
+                    completed: task.state === "completado"
+                }))
+            );
+            return tasks;
+        } catch (e) {
+            console.error("Error obteniendo tareas:", e);
+            return [];
+        }
+    };    
+
     const handleCreateTask = (newTask) => {
         setTasks([...tasks, {
             ...newTask,
@@ -196,19 +225,4 @@ export default function Dashboard({
             </div>
         </>
     );
-}
-
-async function getTasksFromBackend() {
-    try {
-        const response = await fetch("http://localhost:3000/api/tasks", {
-            method: "GET",
-            headers: {
-                "Accept": "application.json"
-            }
-        });
-        const data = await response.json();
-        return data.tasks;
-    } catch (e) {
-        console.error(e);
-    }
 }

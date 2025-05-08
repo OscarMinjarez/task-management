@@ -17,7 +17,17 @@ export async function init() {
 
 export async function getById(id: string): Promise<User | null> {
     await init();
-    return await userRepository.findOneBy({ uuid: id });
+    const users = await userRepository.find({
+        where: {
+            uuid: id
+        },
+        relations: {
+            lists: {
+                tasks: true
+            }
+        }
+     });
+     return users[0];
 }
 
 async function isUsernameTaken(username: string): Promise<boolean> {
