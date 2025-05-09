@@ -19,6 +19,7 @@ export default class User {
     @Column({name:"password", type: "varchar", nullable: true})
     password: string;
 
-    @OneToMany(() => List, list => list.user)
+    @OneToMany(() => List, list => list.user, { cascade: true })
     lists: Array<List>;
+
 }

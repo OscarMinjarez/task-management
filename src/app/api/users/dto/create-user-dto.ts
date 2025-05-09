@@ -1,6 +1,15 @@
 export default class CreateUserDto {
-    username: string;
+    uuid: string;
     name: string;
     email: string;
-    password: string;
+    username: string;
+    lists: {
+        id: number;
+        name: string;
+        color: string;
+        tasks: {
+            id: number;
+            title: string;
+        }[];
+    }[];
 }

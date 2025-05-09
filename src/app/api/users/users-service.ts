@@ -1,6 +1,7 @@
 import { getConnection } from "src/backend/config-database";
 import { DataSource, Repository } from "typeorm";
 import User from "src/backend/entities/User";
+import List from "src/backend/entities/List";
 import CreateUserDto from "./dto/create-user-dto";
 import bcrypt from "bcrypt";
 
@@ -47,14 +48,36 @@ export async function createUser(data: CreateUserDto): Promise<User> {
     }
 
     await init();
+    
     const newUser = new User();
     Object.assign(newUser, data);
 
-    // Antes de guardar, encriptar la contraseña
+    // Encriptar contraseña
     newUser.password = await hashPassword(data.password);
 
-    return await userRepository.save(newUser);
+    // Crear lista inicial
+    const initialList = new List();
+    initialList.name = "Mi primera lista";
+    initialList.color = "blue";
+    initialList.tasks = [];
+    initialList.user = newUser;
+
+    newUser.lists = [initialList];
+
+    const savedUser = await userRepository.save(newUser);
+
+    // Quitar la referencia circular
+    if (savedUser.lists) {
+        savedUser.lists.forEach(list => {
+            delete list.user;
+        });
+    }
+
+    return savedUser;
 }
+
+
+
 
 
 export async function findAllUsers(): Promise<User[]> {
