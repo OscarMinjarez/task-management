@@ -20,6 +20,7 @@ export default function Dashboard({
     const [selectedDate, setSelectedDate] = useState(null);
     const [unlockedAchievement, setUnlockedAchievement] = useState(null);
     const [username, setUsername] = useState(initialUsername);
+    const [achievementProgress, setAchievementProgress] = useState(0);
 
     useEffect(() => {
         async function fetchUserData() {
@@ -82,6 +83,7 @@ export default function Dashboard({
 
                 // Verificar logros
                 checkAchievements(newCompleted ? points + 10 : points - 10);
+                
 
                 return { ...task, completed: newCompleted };
             }
@@ -109,14 +111,14 @@ export default function Dashboard({
                     ...task,
                     listName: list.name,
                     completed: task.state === "completado"
-                }))
+                }))                
             );
             return tasks;
         } catch (e) {
             console.error("Error obteniendo tareas:", e);
             return [];
         }
-    };    
+    };
 
     const handleCreateTask = (newTask) => {
         setTasks([...tasks, {
@@ -163,8 +165,19 @@ export default function Dashboard({
     useEffect(() => {
         async function fetchTasks() {
             const tasksFromBackend = await getTasksFromBackend();
+            var currentProgress = achievementProgress;
+            setAchievementProgress(tasksFromBackend.map(task => {
+                if (task.state === "completado") {
+                    currentProgress = currentProgress + 10;
+                }
+                return currentProgress;
+            }));
+            console.log(currentProgress);
+            setPoints(currentProgress);
+            
             setTasks(tasksFromBackend || []);
         }
+        
         fetchTasks();
     }, []);
 

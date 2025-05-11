@@ -46,12 +46,13 @@ export default function TaskItem({ task, onToggleComplete }) {
             audio.volume = 0.5;
             audio.play().catch(e => console.log('Error de audio:', e));
 
+            handleStateChange("completado");
             confetti({
                 particleCount: 80,
                 spread: 70,
                 origin: { y: 0.6 },
             });
-        }
+        } else handleStateChange("pendiente");
     };
 
     async function handleStateChange(newState) {
@@ -71,6 +72,18 @@ export default function TaskItem({ task, onToggleComplete }) {
             if (!response.ok) {
                 console.error('Error al actualizar estado:', data.error);
             }
+            // espero que esto funcione
+            var starClassName = "col-span-1 flex items-center justify-start";
+            var star = document.getElementsByClassName(starClassName)[0];
+            
+            if (newState === "completado"){                
+                star.src = "/logro-yellow.png";
+                //se actualiza en tiempo real, pero se crea un ciclo infinito de confetti
+                //ya que el metodo handle click evoca este metodo (handlestatechange), la cual evoca handleclick
+                //handleClick();
+            } else star.src = "/logro-gray.png";
+                        
+            
         } catch (error) {
             console.error('Error de red al actualizar el estado:', error);
         }
