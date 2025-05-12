@@ -57,7 +57,7 @@ export async function createUser(data: CreateUserDto): Promise<User> {
 
     // Crear lista inicial
     const initialList = new List();
-    initialList.name = "Mi primera lista";
+    initialList.name = "Personal";
     initialList.color = "blue";
     initialList.tasks = [];
     initialList.user = newUser;
