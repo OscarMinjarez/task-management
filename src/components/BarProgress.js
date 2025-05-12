@@ -1,7 +1,17 @@
 "use client";
 import React from 'react';
 
+const rewardObjectives = [100, 300, 500, 1000];
+var objective = 0;
+
 export default function BarProgress({ points }) {
+    for (const obj of rewardObjectives){
+        if (points < obj){
+            objective = obj;            
+            break;
+        }
+    }
+    if (objective === 0) objective = obj;           
     return (
         <div className="bg-white rounded-lg w-full h-full p-4 flex flex-col items-center justify-center">
             <h3 className="font-semibold text-[#625f5f] mb-3">Tu progreso</h3>
@@ -27,7 +37,7 @@ export default function BarProgress({ points }) {
                         fill="none"
                         stroke="#818cf8"
                         strokeWidth="4"
-                        strokeDasharray={`${points % 100}, 100`}
+                        strokeDasharray={`${points % 100}, ${objective}`}
                         strokeLinecap="round"
                     />
                 </svg>
@@ -47,7 +57,7 @@ export default function BarProgress({ points }) {
 
             {/* Texto de nivel */}
             <p className="text-sm text-[#625f5f]">
-                Nivel {Math.floor(points / 100) + 1} • {points % 100}/100 pts
+                Nivel {Math.floor(points / 100) + 1} • {points % 100}/{objective} pts
             </p>
         </div>
     );

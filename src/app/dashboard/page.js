@@ -172,9 +172,7 @@ export default function Dashboard({
                 }
                 return currentProgress;
             }));
-            console.log(currentProgress);
-            setPoints(currentProgress);
-            
+            setPoints(currentProgress);            
             setTasks(tasksFromBackend || []);
         }
         
